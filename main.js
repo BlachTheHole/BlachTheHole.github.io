@@ -3,7 +3,7 @@ const ctx = canvas.getContext('2d');
 
 var bodies = [];
 var count = 0;
-const dt = 1;
+const dt = .1;
 const G = -100;
 
 class Body {
@@ -31,23 +31,21 @@ class Body {
 }
 
 function start() {
-    addBody(600, 200);
-    addBody(1200, 600);
-    addBody(800, 400, 1, 0, -1);
-    addBody(1000, 400, 1, 0, 1);
+    clearScreen();
+    addBody(800, 400, 100, 0, -.03);
+    addBody(1000, 400, 1, 0, 3);
     gameLoop();
 }
 
 function gameLoop() {
     requestAnimationFrame(gameLoop);
-    clearScreen();
     for (var i = 0; i < count; i++) {
         for (var j = 0; j < count; j++) {
             if (i != j) {
                 console.log(i, j);
                 const dx = bodies[i].access()[1][0]-bodies[j].access()[1][0];
                 const dy = bodies[i].access()[1][1]-bodies[j].access()[1][1];
-                const d = Math.max(Math.sqrt(dx*dx+dy*dy), .1);
+                const d = Math.max(Math.sqrt(dx*dx+dy*dy), 1);
                 const F = G * bodies[j].access()[0] / (d * d * d);
                 console.log(F);
                 bodies[i].app_acc(F*dx,F*dy);
