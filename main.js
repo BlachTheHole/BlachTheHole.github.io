@@ -36,7 +36,7 @@ function start() {
     addBody(1000, 400, 1, 0, 3);
     gameLoop();
 }
-
+// IDKKD
 function gameLoop() {
     requestAnimationFrame(gameLoop);
     for (var i = 0; i < count; i++) {
