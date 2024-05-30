@@ -3,21 +3,23 @@ const ctx = canvas.getContext('2d');
 
 var bodies = [];
 var count = 0;
-const dt = 5;
+const dt = 1;
 const G = -10;
 const H = canvas.clientHeight;
 const W = canvas.clientWidth;
 var center = [W/2, H/2];
 var cbody = -1;
-var zoom = 1;
+var zoom = .04;
 
 class Body {
-    constructor(x,y,m=1,vx=0,vy=0, d=1) {
+    constructor(x,y,m,vx,vy, d, name, color) {
         this.pos = [x, y];
         this.vel = [vx, vy];
         this.acc = [0, 0];
         this.m = m;
         this.d = d;
+        this.name=name;
+        this.color = color;
     }
     app_acc(ax, ay) {
         this.acc[0] += ax;
@@ -26,7 +28,9 @@ class Body {
     access() {
         return [this.m, this.pos, this.vel, this.d];
     }
-    
+    access2() {
+        return [this.name, this.color];
+    }
     update() {
         this.vel[0] += this.acc[0] * dt;
         this.vel[1] += this.acc[1] * dt;
@@ -42,12 +46,15 @@ class Body {
 // 1 px/sec
 
 function start() {
+    const tj=Math.sqrt(10);
+    const N = 360;
+
+    addBody(0, 0, 10000, 0, -tj/100);
+    addBody(10000, 0, 100, 0, tj, .1, "", "#FF0000");
+    for (var i = 1; i < N; i++) {
+        addBody(10000*Math.cos(2 * Math.PI * i / N), 10000*Math.sin(2 * Math.PI * i / N), 0, -tj*Math.sin(2 * Math.PI * i / N), tj*Math.cos(2 * Math.PI * i / N), 1, "", "#FFFFFF");
+    }
     clearScreen();
-    addBody(0, 0, 1000, 0);
-    addBody(1600, 0, 1, 0, 2.5);
-    addBody(1650, 0, .1, 0, 2.9);
-    addBody(1550, 0, .1, 0, 2.1);
-    cbody = 1;
     gameLoop();
 }
 // IDKKD
@@ -73,6 +80,14 @@ function gameLoop() {
         center = [-1*bodies[cbody].access()[1][0]*zoom+W/2, -1*bodies[cbody].access()[1][1]*zoom+H/2];
         console.log(center);
     }
+    ctx.beginPath();
+    const comx = (bodies[0].access()[0]*bodies[0].access()[1][0]+bodies[1].access()[0]*bodies[1].access()[1][0])/(bodies[1].access()[0]+bodies[0].access()[0]);
+    const comy = (bodies[0].access()[0]*bodies[0].access()[1][1]+bodies[1].access()[0]*bodies[1].access()[1][1])/(bodies[1].access()[0]+bodies[0].access()[0]);
+    ctx.arc(comx*zoom+center[0], 
+            comy*zoom+center[1], 5, 0, 2 * Math.PI);
+    ctx.fillStyle = "blue";
+    ctx.fill();
+    console.log(comx, comy);
 }
 
 function clearScreen() {
@@ -83,15 +98,14 @@ function clearScreen() {
 function drawId(id) {
     if (id < count) {
         ctx.beginPath();
-        ctx.arc(bodies[id].access()[1][0]*zoom+center[0], bodies[id].access()[1][1]*zoom+center[1], 10*Math.max(Math.min(zoom*Math.sqrt(bodies[id].access()[0]/bodies[id].access()[3]), 10),.02), 0, 2 * Math.PI);
-        ctx.fillStyle = "white";
+        ctx.arc(bodies[id].access()[1][0]*zoom+center[0], bodies[id].access()[1][1]*zoom+center[1], 5*Math.max(Math.min(zoom*Math.sqrt(bodies[id].access()[0]/bodies[id].access()[3]), 1000),.2), 0, 2 * Math.PI);
+        ctx.fillStyle = bodies[id].access2()[1];
         ctx.fill();
-        ctx.stroke();
     }
 }
 
-function addBody(x,y,m=1,vx=0,vy=0, d=1) {
-    bodies.push(new Body(x,y,m,vx,vy, d));
+function addBody(x,y,m=1,vx=0,vy=0, d=1, name="", color="#FFFFFF") {
+    bodies.push(new Body(x,y,m,vx,vy, d, name, color));
     count += 1;
 }
 
