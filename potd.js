@@ -39,21 +39,25 @@ function searchSheet(query, n = 5) {
 
     .then(res => res.text())
     .then(text => {
-    let rows = text.split("\n").map(r => ({ value: r.split(",")[4] })); // first column
-    data = rows;
-    fuse = new Fuse(data, {
-        keys: ["value"],
-        includeScore: true,
-        threshold: 0.4,  // lower = stricter match
-        ignoreLocation: true,
-        minMatchCharLength: 2
+        let rows = text.split("\n").map(r => {
+            let cols = r.split(",");
+            return { value: cols[4], firstCol: cols[0] }; // 5th column for search, 1st column for output
+        });
+        data = rows;
+        fuse = new Fuse(data, {
+            keys: ["value"],
+            includeScore: true,
+            threshold: 0.4,
+            ignoreLocation: true,
+            minMatchCharLength: 2
+        });
     });
-});
 
-    // Handle input
 document.getElementById("searchBox").addEventListener("input", e => {
     let query = e.target.value;
     if (!fuse) return;
     let results = fuse.search(query, { limit: 5 });
-    document.getElementById("results").innerHTML = results.map(r => `<li>${r.item.value} (score: ${r.score.toFixed(3)})</li>`).join("");
+    document.getElementById("results").innerHTML = results
+        .map(r => `<li>${r.item.firstCol} (score: ${r.score.toFixed(3)})</li>`)
+        .join("");
 });
