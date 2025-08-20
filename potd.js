@@ -1,6 +1,6 @@
 // Add Fuse.js via CDN
 // <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
-const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/10X0-CCSv7FenZP1YaKlDSE-PD4LSZAgpzT5Rs9F8hvA/export?format=csv&id=10X0-CCSv7FenZP1YaKlDSE-PD4LSZAgpzT5Rs9F8hvA&gid=0";
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/10X0-CCSv7FenZP1YaKlDSE-PD4LSZAgpzT5Rs9F8hvA/export?format=tsv&id=10X0-CCSv7FenZP1YaKlDSE-PD4LSZAgpzT5Rs9F8hvA&gid=0";
 let fuse;
 
 // Normalize text: lowercase + ignore word order
@@ -62,7 +62,7 @@ function normalizeText(str) {
 let fuse5, fuse9;
 
 // Load sheet data using a CORS proxy
-fetch(encodeURIComponent(SHEET_CSV_URL.replace("format=csv", "format=tsv")))
+fetch(SHEET_CSV_URL)
     .then(res => res.text())
     .then(tsv => {
         let lines = tsv.split("\n").filter(Boolean);
